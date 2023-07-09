@@ -17,6 +17,7 @@ mod types;
 ///   * Slic3r beta{n}
 ///   * PrusaSlicer{n}
 ///   * Superslicer{n}
+///   * Orcaslicer{n}
 ///   * Ideamaker{n}
 ///   * GCode with Marlin M486 tags
 #[derive(clap::Parser, Debug)]

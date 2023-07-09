@@ -7,6 +7,7 @@ The following slicers are currently supported:
 
 * SuperSlicer
 * PrusaSlicer
+* Orcaslicer
 * Slic3r
 * Cura
 * IdeaMaker

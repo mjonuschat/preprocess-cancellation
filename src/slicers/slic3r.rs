@@ -343,6 +343,85 @@ mod tests {
     }
 
     #[test]
+    fn test_orcaslicer() {
+        let processor = Slic3rProcessor::new();
+        let input = File::open(GCODE_PATH.join("orcaslicer.gcode")).unwrap();
+        let layer_filter = LayerFilter::try_from("*").unwrap();
+
+        let result: String = processor.process(input, &layer_filter).collect();
+        let result: Vec<&str> = result.split('\n').collect();
+
+        let definitions = collect_definitions(&result);
+
+        assert!(definitions.contains("EXCLUDE_OBJECT_DEFINE NAME=cube_1_stl_id_1_copy_0"));
+        assert!(definitions.contains("EXCLUDE_OBJECT_DEFINE NAME=cube_1_stl_id_2_copy_0"));
+        assert!(definitions.contains("EXCLUDE_OBJECT_DEFINE NAME=union_3_stl_id_0_copy_0"));
+        assert!(definitions.contains("EXCLUDE_OBJECT_DEFINE NAME=cylinder_2_stl_id_3_copy_0"));
+
+        assert!(result.contains(&"G1 X125.188 Y133.259 E.01869"));
+
+        assert_eq!(
+            result
+                .iter()
+                .filter(|line| *line == &"EXCLUDE_OBJECT_START NAME=cube_1_stl_id_1_copy_0")
+                .count(),
+            25
+        );
+        assert_eq!(
+            result
+                .iter()
+                .filter(|line| *line == &"EXCLUDE_OBJECT_END NAME=cube_1_stl_id_1_copy_0")
+                .count(),
+            25
+        );
+
+        assert_eq!(
+            result
+                .iter()
+                .filter(|line| *line == &"EXCLUDE_OBJECT_START NAME=cube_1_stl_id_2_copy_0")
+                .count(),
+            25
+        );
+        assert_eq!(
+            result
+                .iter()
+                .filter(|line| *line == &"EXCLUDE_OBJECT_END NAME=cube_1_stl_id_2_copy_0")
+                .count(),
+            25
+        );
+
+        assert_eq!(
+            result
+                .iter()
+                .filter(|line| *line == &"EXCLUDE_OBJECT_START NAME=cylinder_2_stl_id_3_copy_0")
+                .count(),
+            25
+        );
+        assert_eq!(
+            result
+                .iter()
+                .filter(|line| *line == &"EXCLUDE_OBJECT_END NAME=cylinder_2_stl_id_3_copy_0")
+                .count(),
+            25
+        );
+
+        assert_eq!(
+            result
+                .iter()
+                .filter(|line| *line == &"EXCLUDE_OBJECT_START NAME=union_3_stl_id_0_copy_0")
+                .count(),
+            25
+        );
+        assert_eq!(
+            result
+                .iter()
+                .filter(|line| *line == &"EXCLUDE_OBJECT_END NAME=union_3_stl_id_0_copy_0")
+                .count(),
+            25
+        );
+    }
+
+    #[test]
     fn test_issue_1_prusaslicer_point_collection() {
         let processor = Slic3rProcessor::new();
         let input = File::open(GCODE_PATH.join("prusaslicer-issue1.gcode")).unwrap();
