@@ -81,7 +81,11 @@ impl KnownObject {
     }
 
     fn clean_id(name: &str) -> String {
-        CLEAN_RE.replace_all(name, "_").trim_matches('_').into()
+        let ascii_name = any_ascii::any_ascii(name);
+        CLEAN_RE
+            .replace_all(&ascii_name, "_")
+            .trim_matches('_')
+            .into()
     }
 }
 
@@ -165,5 +169,11 @@ mod tests {
         }
 
         assert_eq!(ht.center(), Some(Point::new(5.0, 5.0)));
+    }
+
+    #[test]
+    fn test_unicode_object_names() {
+        let known_object = KnownObject::new("Dé id:0 copy 0");
+        assert_eq!(known_object.name, "De_id_0_copy_0")
     }
 }
